@@ -1,0 +1,59 @@
+server:
+  port: 8086
+spring:
+
+  application:
+    name: orderservice
+  datasource:
+    url: jdbc:mysql://192.168.137.132:3306/duan_order?useSSL=false&characterEncoding=utf8
+    username: root
+    password: dxb343
+    driver-class-name: com.mysql.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  pattern:
+    dateformat: MM-dd HH:mm:ss:SSS
+feign:
+  httpclient:
+    enabled: true
+    max-connections: 200
+    max-connections-per-route: 50
+#---
+#server:
+#  port: 8086
+#spring:
+#  profiles: pro
+#  application:
+#    name: orderservice
+#  datasource:
+#    url: jdbc:mysql://82.157.149.211:3306/hayishu_order?useSSL=false
+#    username: root
+#    password: 123456
+#    driver-class-name: com.mysql.jdbc.Driver
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 82.157.149.211:8848
+#        ip: 82.157.164.144
+#        port: 8086
+#mybatis:
+#  configuration:
+#    map-underscore-to-camel-case: true
+#logging:
+#  pattern:
+#    dateformat: MM-dd HH:mm:ss:SSS
+#feign:
+#  httpclient:
+#    enabled: true
+#    max-connections: 200
+#    max-connections-per-route: 50
+#---
+#spring:
+#  profiles:
+#    active: dev
