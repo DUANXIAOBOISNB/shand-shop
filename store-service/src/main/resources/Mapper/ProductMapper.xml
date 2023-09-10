@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springcloud.store.Mapper.ProductMapper">
+
+    <resultMap id="BaseResultMap" type="com.springcloud.store.Entity.Product">
+            <id property="productid" column="ProductID" jdbcType="INTEGER"/>
+            <result property="title" column="Title" jdbcType="VARCHAR"/>
+            <result property="description" column="Description" jdbcType="VARCHAR"/>
+            <result property="oldprice" column="Oldprice" jdbcType="DECIMAL"/>
+            <result property="price" column="Price" jdbcType="DECIMAL"/>
+            <result property="categoryid" column="CategoryID" jdbcType="INTEGER"/>
+            <result property="sellerid" column="SellerID" jdbcType="INTEGER"/>
+            <result property="createdat" column="CreatedAt" jdbcType="TIMESTAMP"/>
+            <result property="updatedat" column="UpdatedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ProductID,Title,Description,
+        Oldprice,Price,CategoryID,
+        SellerID,CreatedAt,UpdatedAt
+    </sql>
+</mapper>
