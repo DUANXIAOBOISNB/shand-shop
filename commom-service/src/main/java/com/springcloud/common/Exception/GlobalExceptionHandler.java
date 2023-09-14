@@ -1,4 +1,4 @@
-package com.springcloud.store.Exception;
+package com.springcloud.common.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;

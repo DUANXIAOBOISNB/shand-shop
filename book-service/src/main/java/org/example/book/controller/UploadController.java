@@ -34,7 +34,7 @@ public class UploadController {
      * @return 上传成功
      */
     @PostMapping("/upload")
-    public Result uploadCover(@RequestPart("cover") MultipartFile coverFile) {
+    public Result uploadCover(@RequestPart("file") MultipartFile coverFile) {
         // 获得用户上传的原始文件名
         String coverOrgFileName = coverFile.getOriginalFilename();
         assert coverOrgFileName != null;

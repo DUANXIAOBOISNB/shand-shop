@@ -1,4 +1,4 @@
-package com.springcloud.store.Exception;
+package com.springcloud.common.Exception;
 
 public class BusinessException extends RuntimeException {
 	private ErrorCode errorCode;

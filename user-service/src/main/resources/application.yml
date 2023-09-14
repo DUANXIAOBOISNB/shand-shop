@@ -24,6 +24,11 @@ feign:
     enabled: true
     max-connections: 200
     max-connections-per-route: 50
+minio:
+  endPoint: http://192.168.137.132:9000/
+  accessKey: dxb343
+  secretKey: duanxiaobo343
+  bucketName: duan
 #---
 #server:
 #  port: 8081

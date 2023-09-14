@@ -43,6 +43,7 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+
 logging:
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS

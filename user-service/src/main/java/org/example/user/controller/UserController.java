@@ -1,78 +1,85 @@
 package org.example.user.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.example.feign.pojo.User;
+import com.springcloud.common.Exception.BusinessException;
+import com.springcloud.common.Exception.ErrorCodeimpl;
+import com.springcloud.common.Vo.CommonResult;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.example.feign.result.Result;
 import org.example.feign.util.ResultUtil;
+import org.example.user.Dto.LoginDto;
+
+import org.example.user.Dto.RegisterDto;
 import org.example.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
+import javax.annotation.Resource;
+import java.io.InputStream;
+import java.util.UUID;
 
-/**
- * UserController
- *
- * @author Zjh
- * @date 2021/12/6 15:52
- **/
-@Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping("user")
+// @Api(tags = "Userloginmodel ")
 public class UserController {
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
+	@Resource
+	MinioClient minioClient;
 
+	@Value("${minio.endPoint}")
+	String endPoint;
 
-    @PostMapping("/register")
-    @ResponseBody
-    public Result register(@RequestBody User user){
-        user.setIdentity(1);
-        user.setMoney(new BigDecimal(0));
-        user.setSales(0);
-        user.setFans(0);
-        int res = userService.register(user);
-        if (-2 == res){
-            return ResultUtil.buildFailResult("该手机号已经注册过!",null);
-        } else if (res == -1){
-            return ResultUtil.buildFailResult("该昵称已被使用！",null);
-        } else if (res == 0){
-            return ResultUtil.buildFailResult("注册失败!",null);
-        } else {
-            return ResultUtil.buildSuccessResult("注册成功,确定进入登录界面",null);
-        }
-    }
+	@Value("${minio.bucketName}")
+	String bucketName;
+	@PostMapping("/login")
+	// @ApiOperation("用户注册接口")
+	public CommonResult<String> login(@RequestBody LoginDto loginDto)
+	{
+		return CommonResult.<String>builder()
+				.data(userService.login(loginDto))
+				.build();
+	}
+	@PostMapping("/register")
+	public CommonResult<String> register(@RequestBody RegisterDto registerDto)
+	{
+		return CommonResult.<String>builder()
+				.data(userService.register(registerDto))
+				.build();
+	}
+	@PostMapping("/uploadprofile")
+	public CommonResult<String> uploadCover(@RequestPart("file") MultipartFile coverFile) {
+		// 获得用户上传的原始文件名
+		String coverOrgFileName = coverFile.getOriginalFilename();
+		assert coverOrgFileName != null;
+		String coverExt = coverOrgFileName.substring(coverOrgFileName.lastIndexOf(".") + 1).toLowerCase();
+		String coverPikId = UUID.randomUUID().toString().replaceAll("-", "");
+		String coverPath = "/userprofile/" + coverPikId + "." + coverExt;
 
-    @PostMapping("/login")
-    @ResponseBody
-    public Result login(@RequestBody User user){
-        User user1 = userService.login(user);
-        if (null != user1){
-            return ResultUtil.buildSuccessResult("登录成功",user1);
-        } else {
-            return ResultUtil.buildFailResult("手机号或密码错误!",null);
-        }
-    }
+		try {
+			// 开始上传封面
+			InputStream in = coverFile.getInputStream();
+			minioClient.putObject(
+					PutObjectArgs.builder()
+							.bucket(bucketName)
+							.object(coverPath)
+							.stream(in, coverFile.getSize(), -1)
+							.contentType(coverFile.getContentType())
+							.build());
+			in.close();
+			// return ResultUtil.buildSuccessResult("上传成功", endPoint + bucketName + coverPath);
+			return CommonResult.<String>builder()
+					.data(endPoint + bucketName + coverPath)
+					.build();
 
-    @PostMapping("/changePassword")
-    @ResponseBody
-    public Result changePassword(@RequestBody User user){
-        int res = userService.changePassword(user);
-        if (res == 1){
-            return ResultUtil.buildSuccessResult("修改密码成功!请重新登录",null);
-        } else {
-            return ResultUtil.buildFailResult("修改密码失败!",null);
-        }
-    }
-
-    @PostMapping("/setInfo")
-    @ResponseBody
-    public Result setInfo(@RequestBody User user){
-        int res = userService.setInfo(user);
-        if (res == 1){
-            return ResultUtil.buildSuccessResult("修改成功!",null);
-        } else {
-            return ResultUtil.buildFailResult("修改失败!",null);
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ErrorCodeimpl.UNKNOWN);
+			// return ResultUtil.buildFailResult("上传失败", null);
+		}
+	}
 }
